@@ -1,4 +1,5 @@
 const telegramApi = require('node-telegram-bot-api')
+const axios = require('axios')
 const token = '5261290106:AAFbWlyMS3ioMCa8hc8GhmMgiAMCCjSs2GY'
 
 const bot = new telegramApi(token, {polling: true})
@@ -18,5 +19,13 @@ bot.on('message', async msg => {
   if (text === '/info') {
     return bot.sendMessage(chatId, 'Я умею создавать недолгоживущие странички со статьями из заблокированных источников, просто отправь мне ссылку')
   }
-  return bot.sendMessage(chatId, 'Я тебя не понимаю попробуй еще раз')
+
+  if(text.includes('http') ||  text.includes('https')) {
+    await bot.sendMessage(chatId, 'Минуточку, я думаю...')
+    const quote = await axios('https://favqs.com/api/qotd')
+     return bot.sendMessage(chatId, `Скоро я научусь отправялть ссылку на страничку со статьей, а пока вот тебе рандомная цитата:
+     
+  ${quote.data.quote.body}`)
+  }
+  return bot.sendMessage(chatId, 'Я тебя не понимаю, попробуй еще раз')
 })
